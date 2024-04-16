@@ -1,0 +1,81 @@
+<% layout('layout/boiler_plate') %>
+
+<div class="container">
+    <h1 class="welcome-title">Welcome to <%= currentUser.user_type %> View</h1>
+    <div class="access-card">
+        <p class="access-title">The <%= currentUser.user_type %> has access to:</p>
+        <ul class="access-list">
+            <% if (currentUser.user_type == "Manager") { %>
+            <li class="access-item">View the sales statistics</li>
+            <li class="access-item">View Inventory</li>
+            <li class="access-item">Change price of items</li>
+            <li class="access-item">Order items from supplier</li>
+            <% } %>
+            <% if (currentUser.user_type == "Clerk") { %>
+            <li class="access-item">Scan and enter items from customer's cart</li>
+            <li class="access-item">Print bill after payment</li>
+            <% } %>
+            <% if (currentUser.user_type == "Staff") { %>
+            <li class="access-item">Add items after delivery from supplier</li>
+            <li class="access-item">Delete damaged items from inventory</li>
+            <% } %>
+        </ul>
+    </div>
+</div>
+
+<style>
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: auto;
+        max-width: 700px;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+    }
+
+    .welcome-title {
+        font-size: 2rem;
+        margin-bottom: 20px;
+        color: #2c3e50;
+        text-align: center;
+    }
+
+    .access-card {
+        border-radius: 8px;
+        background-color: #e3f2fd;
+        padding: 20px;
+        width: 100%;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .access-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .access-list {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .access-item {
+        padding: 10px;
+        font-size: 1.1rem;
+        border-radius: 5px;
+        margin-bottom: 8px;
+        color: #34495e;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .access-item:hover {
+        background-color: #bbdefb;
+        color: #2c3e50;
+    }
+</style>

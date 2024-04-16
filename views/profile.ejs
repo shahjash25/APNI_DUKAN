@@ -1,0 +1,82 @@
+<% layout('layout/boiler_plate') %>
+
+<div class="profile-container">
+    <h1 class="profile-title">Profile</h1>
+
+    <div class="profile-card">
+        <ul class="profile-info">
+            <li class="profile-item">
+                <strong>Name:</strong> <%= currentUser.name %>
+            </li>
+            <li class="profile-item">
+                <strong>Type of User:</strong> <%= currentUser.user_type %>
+            </li>
+            <li class="profile-item">
+                <strong>Username:</strong> <%= currentUser.username %>
+            </li>
+            <li class="profile-item">
+                <strong>Joining Date:</strong> <%= currentUser.joining_date %>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<style>
+    /* General container styles */
+    .profile-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: auto;
+        max-width: 600px;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #f4f6f8;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Profile title styling */
+    .profile-title {
+        font-size: 2rem;
+        margin-bottom: 20px;
+        color: #2c3e50;
+        text-align: center;
+        border-bottom: 2px solid #d4d8de;
+        padding-bottom: 10px;
+        width: 100%;
+    }
+
+    /* Profile card and info list styling */
+    .profile-card {
+        width: 100%;
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-info {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    /* Profile item styling */
+    .profile-item {
+        padding: 10px 15px;
+        font-size: 1.1rem;
+        border-bottom: 1px solid #d4d8de;
+        color: #2c3e50;
+    }
+
+    /* Add hover effect */
+    .profile-item:hover {
+        background-color: #f0f5fa;
+    }
+
+    /* Bold labels */
+    .profile-item strong {
+        color: #34495e;
+    }
+</style>
