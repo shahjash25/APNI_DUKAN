@@ -1,5 +1,5 @@
 
-app.get("/stat", isLoggedIn, async (req, res) => {
+app.get("/sales-statistics",  async (req, res) => {
   try {
     const newdata = await Sales.find({});
 

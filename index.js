@@ -79,7 +79,7 @@ app.post(
   }),
   async (req, res) => {
     req.flash("success", "Welcome back!");
-    res.redirect("/welcome");
+    res.redirect("/dashboard");
   }
 );
 
@@ -91,11 +91,11 @@ app.get("/logout", async (req, res) => {
   });
 });
 
-app.get("/register", (req, res) => {
+app.get("/signup", (req, res) => {
   res.render("register");
 });
 
-app.post("/register", async (req, res) => {
+app.post("/signup", async (req, res) => {
   try {
     const { name, username, user_type, password } = req.body;
     joining_date = Date.now();
@@ -104,11 +104,11 @@ app.post("/register", async (req, res) => {
     req.login(newuser, (err) => {
       if (err) return next(err);
       req.flash("success", "Welcome new user!");
-      res.redirect("/welcome");
+      res.redirect("/dashboard");
     });
   } catch (e) {
     req.flash("error", e.message);
-    res.redirect("register");
+    res.redirect("signup");
   }
 });
 
@@ -126,7 +126,7 @@ app.get("/about", async (req, res) => {
   res.render("about");
 });
 
-app.get("/welcome", async (req, res) => {
+app.get("/dashboard", async (req, res) => {
   res.render("welcome");
 });
 
@@ -150,7 +150,7 @@ app.get("/additem", async (req, res) => {
 
 //manager
 
-app.get("/stat", async (req, res) => {
+app.get("/sales-statistics", async (req, res) => {
   var filter = 0;
   try {
     const allsalesforpie = await Sales.aggregate([
@@ -182,7 +182,7 @@ app.get("/stat", async (req, res) => {
   }
 });
 
-app.post("/stat", async (req, res) => {
+app.post("/itemsales", async (req, res) => {
   var filter = req.body.filter;
 
   try {
@@ -222,7 +222,7 @@ app.get("/bill", async (req, res) => {
   res.render("bill", { items });
 });
 
-app.post("/bill", async (req, res) => {
+app.post("/generate-bill", async (req, res) => {
   if (res.locals.currentUser.user_type != "Clerk") {
     req.flash("error", "Only Sales Clerk is authorized for this action");
     res.redirect("/welcome");
@@ -277,7 +277,7 @@ app.post("/bill", async (req, res) => {
   // res.send(req.body)
 });
 
-app.get("/print", (req, res) => {
+app.get("/print-bill", (req, res) => {
   res.render("print_bill");
 });
 
@@ -316,5 +316,5 @@ app.post("/updateItems", async (req, res) => {
 });
 
 app.listen(8080, () => {
-  console.log("Listening on port 4000!!..");
+  console.log("Listening on port 8080!!..");
 });
