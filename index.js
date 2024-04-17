@@ -5,16 +5,18 @@ const session = require("express-session");
 const mongoose = require("mongoose");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
-const Window = require("window");
 const flash = require("connect-flash");
-const window = new Window();
-
+const signup=require('./controllers/signup.js');
+const generateBill=require('./controllers/billgenerate.js');
 const Bill = require("./models/bill");
 const User = require("./models/user");
 const Item = require("./models/item");
 const Sales = require("./models/sales");
-const { isLoggedIn } = require("./middleware");
-
+const billgenerate = require("./controllers/billgenerate.js");
+const saleStats=require('./controllers/saleStatistics.js');
+const itemStatistics=require('./controllers/itemStats.js');
+const addItems = require("./controllers/addItems.js");
+const updateItems = require("./controllers/updateItems.js");
 mongoose.connect("mongodb://127.0.0.1:27017/supermarketcollege", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -34,13 +36,13 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
 
 const sessionConfig = {
-  secret: "supermarketapp",
+  secret: "ApniDukhan",
   resave: false,
   saveUninitialized: true,
   cookie: {
     httpOnly: true,
-    expires: Date.now() + 1000 * 60 * 60 * 24 * 2, //expires after two days
-    maxAge: 1000 * 60 * 60 * 24 * 2,
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 7, 
+    maxAge: 1000 * 60 * 60 * 24 * 7,
   },
 };
 app.use(session(sessionConfig));
@@ -59,13 +61,6 @@ app.use((req, res, next) => {
   res.locals.error = req.flash("error");
   next();
 });
-
-app.get("/", (req, res) => {
-  let newuser = 
-  res.render("home");
-});
-
-// authentications
 
 app.get("/login", (req, res) => {
   res.render("login");
@@ -95,28 +90,7 @@ app.get("/signup", (req, res) => {
   res.render("register");
 });
 
-app.post("/signup", async (req, res) => {
-  try {
-    const { name, username, user_type, password } = req.body;
-    joining_date = Date.now();
-    const user = new User({ name, user_type, joining_date, username });
-    const newuser = await User.register(user, password);
-    req.login(newuser, (err) => {
-      if (err) return next(err);
-      req.flash("success", "Welcome new user!");
-      res.redirect("/dashboard");
-    });
-  } catch (e) {
-    req.flash("error", e.message);
-    res.redirect("signup");
-  }
-});
-
-app.post("/stat_ind", async (req, res) => {
-  var x = req.body;
-});
-
-//common
+app.post("/signup", signup);
 
 app.get("/profile", async (req, res) => {
   res.render("profile");
@@ -130,190 +104,35 @@ app.get("/dashboard", async (req, res) => {
   res.render("welcome");
 });
 
-//extras
-
-app.get("/makeuser", async (req, res) => {
-  const user = new User({
-    name: "manager",
-    user_type: "Manager",
-    username: "manager",
-    joining_date: Date.now()
-  });
-  const newuser = await User.register(user, "manager");
-  res.send(newuser);
-});
 app.get("/additem", async (req, res) => {
-  // const item = new Item({item_name:"vegetable",item_code:await Item.countDocuments()+1,quantity:"40",unit_price:"50",description:"grocery"})
-  // await item.save();
+ 
   res.send(res.locals.currentUser.user_type);
 });
 
-//manager
+app.get("/sales-statistics", saleStats);
 
-app.get("/sales-statistics", async (req, res) => {
-  var filter = 0;
-  try {
-    const allsalesforpie = await Sales.aggregate([
-      {
-        $match: {},
-      },
-      {
-        $group: {
-          _id: "$item_name",
-          total: {
-            $sum: { $multiply: ["$quantity", "$unit_price"] },
-          },
-        },
-      },
-      {
-        $addFields: {
-          item_name: "$_id",
-        },
-      },
-    ]);
-    const allsales = await Sales.find({});
-    const allDetails = await Item.find({});
-    // console.log(allsales
-    // const main=true;
-    res.render("sales_stat", { allsales, allDetails, allsalesforpie, filter });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Internal Server Error");
-  }
-});
-
-app.post("/itemsales", async (req, res) => {
-  var filter = req.body.filter;
-
-  try {
-    const allsalesforpie = await Sales.aggregate([
-      {
-        $match: {},
-      },
-      {
-        $group: {
-          _id: "$item_name",
-          total: {
-            $sum: { $multiply: ["$quantity", "$unit_price"] },
-          },
-        },
-      },
-      {
-        $addFields: {
-          item_name: "$_id",
-        },
-      },
-    ]);
-    const allsales = await Sales.find({});
-    const allDetails = await Item.find({});
-    res.render("sales_stat", { allsales, allDetails, allsalesforpie, filter });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Internal Server Error");
-  }
-});
+app.post("/itemsales", itemStatistics);
 
 app.get("/bill", async (req, res) => {
-  // if(res.locals.currentUser.user_type!='Clerk'){
-  //     req.flash('error', 'Only Sales Clerk is authorized for this action');
-  //     res.redirect('/welcome');
-  // }
   const items = await Item.find({});
-  res.render("bill", { items });
+     res.render("bill", { items });
 });
 
-app.post("/generate-bill", async (req, res) => {
-  if (res.locals.currentUser.user_type != "Clerk") {
-    req.flash("error", "Only Sales Clerk is authorized for this action");
-    res.redirect("/welcome");
-  }
-  // return res.send(req.body)
-  var bill = req.body;
-  // console.log(bill);
-  const date = new Date();
-  bill.date = date;
-
-  var bill_items = [];
-
-  for (let i = 0; i < bill.code.length; i++) {
-    var q = await Item.find({ item_code: bill.code[i] });
-    const x = await Item.findOneAndUpdate(
-      { item_code: bill.code[i] },
-      { quantity: q[0].quantity - bill.qty[i] }
-    );
-    bill_items.push({
-      item_code: bill.code[i],
-      name: q[0].item_name,
-      quantity: bill.qty[i],
-      unit_price: bill.price[i],
-    });
-    const sell = new Sales({
-      item_code: bill.code[i],
-      item_name: q[0].item_name,
-      unit_price: bill.price[i],
-      quantity: bill.qty[i],
-      date: date,
-    });
-    await sell.save();
-    // console.log(q);
-  }
-  // console.log(bill_items)
-
-  const new_bill = new Bill({
-    // customer_name:bill.customer_name,contact:bill.contact,
-    items: bill_items,
-    total_cost: bill.sub_total,
-    date: bill.date,
-  });
-  await new_bill.save();
-
-  bill.id = await Bill.countDocuments();
-  bill.bill_items = bill_items;
-
-  // bill=JSON.stringify(bill)
-
-  res.render("print_bill", { bill });
-
-  // res.send(req.body)
-});
+app.post("/generate-bill",billgenerate );
 
 app.get("/print-bill", (req, res) => {
   res.render("print_bill");
 });
 
 app.get("/inventory", async (req, res) => {
-  // if(res.locals.currentUser.user_type=='Clerk'){
-  //     req.flash('error', 'You are not authorized for this action');
-  //     res.redirect('/welcome');
-  // }
+  
   const allDetails = await Item.find({});
   res.render("inventory", { details: allDetails });
 });
 
-app.post("/add", async (req, res) => {
-  newitem = req.body;
-  const item = new Item({
-    item_name: newitem.i1,
-    item_code: (await Item.countDocuments()) + 1,
-    quantity: newitem.i4,
-    unit_price: newitem.i3,
-    description: newitem.i2,
-  });
-  await item.save();
-  const allDetails = await Item.find({});
-  res.render("inventory", { details: allDetails });
-});
+app.post("/add", addItems);
 
-app.post("/updateItems", async (req, res) => {
-  //return res.send(req.body)
-  newitem = req.body;
-  const x = await Item.findOneAndUpdate(
-    { item_code: parseInt(newitem.i1) },
-    { unit_price: newitem.i3, quantity: newitem.i4 }
-  );
-  const allDetails = await Item.find({});
-  res.render("inventory", { details: allDetails });
-});
+app.post("/updateItems", updateItems);
 
 app.listen(8080, () => {
   console.log("Listening on port 8080!!..");
