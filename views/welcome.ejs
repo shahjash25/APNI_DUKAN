@@ -1,69 +1,104 @@
 <% layout('layout/boiler_plate') %>
 
 <div class="container">
-    <h1 class="welcome-title">Welcome to <%= currentUser.user_type %> View</h1>
-    <div class="access-card">
-        <p class="access-title">The <%= currentUser.user_type %> has access to:</p>
-        <ul class="access-list">
-            <% if (currentUser.user_type == "Manager") { %>
-            <li class="access-item">View the sales statistics</li>
-            <li class="access-item">View Inventory</li>
-            <li class="access-item">Change price of items</li>
-            <li class="access-item">Order items from supplier</li>
-            <% } %>
-            <% if (currentUser.user_type == "Clerk") { %>
-            <li class="access-item">Scan and enter items from customer's cart</li>
-            <li class="access-item">Print bill after payment</li>
-            <% } %>
-            <% if (currentUser.user_type == "Staff") { %>
-            <li class="access-item">Add items after delivery from supplier</li>
-            <li class="access-item">Delete damaged items from inventory</li>
-            <% } %>
-        </ul>
+    <div class="content">
+        <!-- Image Section -->
+        <div class="image-section">
+            <img src="https://www.shutterstock.com/image-vector/job-manager-searching-recruitment-hiring-600nw-1769746463.jpg" alt="Dummy Image" class="dummy-image">
+        </div>
+        <!-- Functionality Section -->
+        <div class="functionality-section">
+            <div class="access-card">
+                <h1 class="access-title"><%= currentUser.user_type %> Access</h1>
+                <ul class="access-list">
+                    <!-- <li class="access-item"><a href="/sales-statistics" style="text-decoration: none;">View the sales statistics</a></li>
+                    <li class="access-item"><a href="/inventory" style="text-decoration: none;">View Inventory</a></li>
+                    <li class="access-item"><a href="/inventory" style="text-decoration: none;">Change the price of items</a></li>
+                    <li class="access-item"><a href="/signup" style="text-decoration: none;">Add staff</a></li> -->
+                    <% if (currentUser.user_type == "Manager") { %>
+                        <li class="access-item">View the sales statistics</li>
+                        <li class="access-item">View Inventory</li>
+                        <li class="access-item">Change price of items</li>
+                        <li class="access-item">Order items from supplier</li>
+                        <% } %>
+                        <% if (currentUser.user_type == "Clerk") { %>
+                        <li class="access-item">Scan and enter items from customer's cart</li>
+                        <li class="access-item">Print bill after payment</li>
+                        <% } %>
+                        <% if (currentUser.user_type == "Staff") { %>
+                        <li class="access-item">Add items after delivery from supplier</li>
+                        <li class="access-item">Delete damaged items from inventory</li>
+                        <% } %>
+                </ul>
+            </div>
+        </div>
     </div>
 </div>
 
 <style>
+    /* Styles for the container to take up the full size of the screen */
     .container {
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        margin: auto;
-        max-width: 700px;
-        padding: 20px;
-        border-radius: 10px;
-        background-color: #f9f9f9;
-    }
-
-    .welcome-title {
-        font-size: 2rem;
-        margin-bottom: 20px;
-        color: #2c3e50;
-        text-align: center;
-    }
-
-    .access-card {
-        border-radius: 8px;
-        background-color: #e3f2fd;
-        padding: 20px;
-        width: 100%;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .access-title {
-        font-size: 1.25rem;
-        font-weight: bold;
-        color: #2c3e50;
-        margin-bottom: 15px;
-        text-align: center;
-    }
-
-    .access-list {
-        list-style-type: none;
+        height: 100vh;
+        width: 100vw;
+        margin: 0;
         padding: 0;
     }
 
+    /* Content section is the main flex container */
+    .content {
+        display: flex;
+        flex-grow: 1;
+    }
+
+    /* Image section takes up half of the width of the content */
+    .image-section {
+        width: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Dummy image styling */
+    .dummy-image {
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 10px;
+    }
+
+    /* Functionality section takes up half of the width of the content */
+    .functionality-section {
+        width: 50%;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Access card styling */
+    .access-card {
+        background-color: #e3f2fd;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 100%;
+    }
+
+    /* Access title styling */
+    .access-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #2c3e50;
+        text-align: center;
+    }
+
+    /* Access list styling */
+    .access-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    /* Access item styling */
     .access-item {
         padding: 10px;
         font-size: 1.1rem;
@@ -74,6 +109,7 @@
         transition: background-color 0.3s ease;
     }
 
+    /* Access item hover effect */
     .access-item:hover {
         background-color: #bbdefb;
         color: #2c3e50;
